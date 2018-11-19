@@ -8,6 +8,24 @@ body {
     background-color: cornflowerblue;
     flex-direction: column;
   }
+
+  .result{
+    position: absolute;
+    width: 15vh;
+    height: 15vh;
+    background-color: green;
+    top: 0;
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    font-size: 16vh;
+    &.result-player{      
+      left: 0;
+    }
+    &.result-computer{
+      right: 0;
+    }
+  }
   
   .main-canvas {
     border: 2px solid black;
