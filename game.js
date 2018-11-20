@@ -8,15 +8,21 @@ ctx.fillRect(0,0,800,350);
 let sI=null;
 let position=100;
 
+canvas.addEventListener("click", function(e){
+    if(e.clientY-canvas.offsetTop>ctx.canvas.height/3)
+    console.log(e.clientY);
+})
+
 //BALL
 
 const Ball = function(ctx,size,color){
     this.size=size;
     this.positionX=(ctx.canvas.width/2);
     this.positionY=(ctx.canvas.height/2*.4);
-    this.gX=8;
-    this.gY=6;
+    this.gX=5;
+    this.gY=5;
     this.color=color;
+    this.canHits=true;
     // this.move=function(){
     //     if(this.positionY-size<=0)
     //     {
@@ -42,18 +48,24 @@ const Ball = function(ctx,size,color){
     
 }
 
-Ball.prototype.move=function(){
+Ball.prototype.move=function(ctx){
     if(this.positionY-this.size<=0)
     {
         this.gY=-this.gY;
+        this.gY
     }
     if(this.positionX-this.size<=0 || this.positionX+this.size>=ctx.canvas.width){
         this.gX=-this.gX;
     }
     this.positionX+=this.gX;
     this.positionY-=this.gY;
+    if(this.positionY==ctx.canvas.height/2)
+    {
+        this.canHits=true;
+    }
     
 }
+
 Ball.prototype.draw=function(){
     ctx.beginPath();
     ctx.fillStyle=this.color;       
@@ -63,6 +75,13 @@ Ball.prototype.draw=function(){
     
 }
 
+Ball.prototype.detectedNet=function(net){
+    if(this.positionX+this.size>=net.positionX && this.positionX+this.size<=net.positionX+net.width && this.positionY>=net.positionY  )
+    {
+        this.gX=-this.gX;
+    }
+    
+}
 
 /// NET
 const Net=function(ctx){
@@ -89,23 +108,28 @@ const Volleyballer = function(ctx,positionX,color,play){
     this.positionX=positionX;
     this.positionY= ctx.canvas.height;
     this.color=color;
+    this.pkt=0;
     this.play=play;
 }
 
 Volleyballer.prototype.move=function(e){  
         
-        this.positionX=e-ctx.canvas.offsetLeft-(this.width/2); 
-        console.log(this.width/2);      
+        this.positionX=e-ctx.canvas.offsetLeft-(this.width/2);            
     
 }
 
 Volleyballer.prototype.detected=function(ball)
 {
-    if((ball.positionX>=this.positionX) && (ball.positionX<=this.positionX+this.width)&&(ball.positionY+ball.size>=this.positionY-this.height))
+    if((ball.positionX>=this.positionX) && (ball.positionX<=this.positionX+this.width)&&(ball.positionY+ball.size>=this.positionY-this.height)&& ball.canHits)
     {
-        
-        ball.gX=-ball.gX;
+        if(ball.positionX>=this.positionX+this.width/2){
+            ball.gX=ball.gX;
+        }
+        else{
+            ball.gX=-ball.gX;
+        }       
         ball.gY=-ball.gY;
+        ball.canHits=false;
     }
 }
     
@@ -135,9 +159,9 @@ VolleyballGame.prototype.drawElements=function(){
     this.player.draw();
     this.computer.draw();
 }
-VolleyballGame.prototype.moveElements=function(position){
+VolleyballGame.prototype.moveElements=function(position,ctx){
     this.player.move(position);
-    this.ball.move();
+    this.ball.move(ctx);
     this.computer.move(position);
     
 }
@@ -159,6 +183,7 @@ VolleyballGame.prototype.detectedHits=function(){
     
     this.computer.detected(this.ball);
     this.player.detected(this.ball);
+    this.ball.detectedNet(this.net);
    
     
 }
@@ -166,18 +191,28 @@ VolleyballGame.prototype.detectedHits=function(){
 VolleyballGame.prototype.gameOver=function(){
     if(this.ball.positionY>=ctx.canvas.height)
     {
-        if(this.ball.positionY+this.ball.size>=ctx.canvas.height)
+       
+    document.querySelector("h1").innerHTML="Przegrales";
+    if(this.ball.positionX<=this.ctx.canvas.width/2)
     {
-        document.querySelector("h1").innerHTML="Przegrales"
+       
+        this.computer.pkt++
+        document.querySelector("div.result-computer").innerHTML=this.computer.pkt;
     }
-       clearInterval(sI);
+    else
+    {
+        this.player.pkt++
+        document.querySelector("div.result-player").innerHTML=this.player.pkt;
+    }
+
+    clearInterval(sI);
     }
 }
     
 
 if(canvas && canvas.getContext('2d'))
 {
-  const ball1 = new Ball(ctx,10,"blue");  
+  const ball1 = new Ball(ctx,14,"yellow");  
   const net = new Net(ctx);  
   const player = new Volleyballer(ctx,200,"red",true);
   const computer = new Volleyballer(ctx,700,"green",false);
@@ -192,7 +227,7 @@ if(canvas && canvas.getContext('2d'))
     ctx.fillStyle="beige";
     ctx.fillRect(0,0,800,350);
     game.drawElements();    
-   game.moveElements(position);
+   game.moveElements(position,ctx);
    game.gameOver();
     
 
