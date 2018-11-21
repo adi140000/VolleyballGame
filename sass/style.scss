@@ -5,20 +5,21 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: cornflowerblue;
+    background-color: grey;
+    
     flex-direction: column;
   }
 
   .result{
     position: absolute;
     width: 15vh;
-    height: 15vh;
-    background-color: green;
+    height: 15vh;    
     top: 0;
     display: flex;
     justify-content:center;
     align-items: center;
     font-size: 16vh;
+    color: yellow;
     &.result-player{      
       left: 0;
     }
@@ -30,4 +31,28 @@ body {
   .main-canvas {
     border: 2px solid black;
     background-color: beige;
+  }
+
+  div.buttons{
+    display: flex;
+    width: 50%;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 20vh;
+  }
+
+  button{
+    padding:3vh;
+    border: 2px solid black;    
+    background-color:yellow;
+    font-weight: bold;
+    transition: 1s;
+    cursor: pointer;
+    &.nextRound{
+      display: none;
+    }
+    &:hover{
+      background-color:black;
+      color: yellow;
+    }
   }
