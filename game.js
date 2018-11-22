@@ -12,6 +12,8 @@ ctx.fillStyle="beige";
 ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
 let sI=null;
 let position=100;
+const audio = new Audio("hit.mp3");
+
 
 
 //BALL
@@ -113,6 +115,7 @@ Volleyballer.prototype.detected=function(ball)
 {
     if((ball.positionX>=this.positionX) && (ball.positionX<=this.positionX+this.width)&&(ball.positionY+ball.size>=this.positionY-this.height)&& ball.canHits)
     {
+        audio.play();
         if(ball.positionX>=this.positionX+this.width/2){
             ball.gX=ball.gX;
         }
@@ -287,7 +290,7 @@ const play = function(){
     
         player.pkt=0;
         computer.pkt=0
-        
+        document.querySelector("h1").innerHTML="--------"
         document.querySelector("div.result-player").innerHTML=0;
         document.querySelector("div.result-computer").innerHTML=0;
         
