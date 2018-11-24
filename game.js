@@ -8,7 +8,18 @@ const ctx=canvas.getContext('2d');
 
 canvas.width=window.innerWidth/1.5;
 canvas.height=window.innerHeight/1.5;
-ctx.fillStyle="beige";
+const gradient = ctx.createLinearGradient(0,0,0,ctx.canvas.height);
+//bulild gradient
+gradient.addColorStop(0,"#b3f0ff");
+gradient.addColorStop(0.7,"#b3f0ff");
+gradient.addColorStop(0.75,"yellow");
+gradient.addColorStop(0.799,"yellow");
+gradient.addColorStop(0.8,"white");
+gradient.addColorStop(0.806,"white");
+gradient.addColorStop(0.807,"yellow");
+gradient.addColorStop(1,"yellow");
+ctx.fillStyle=gradient;
+
 ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
 let sI=null;
 let position=100;
@@ -81,7 +92,7 @@ const Net=function(ctx){
     this.height=(ctx.canvas.height/10*5);;
     this.width=6;
     this.positionX=(ctx.canvas.width/2-2);
-    this.positionY=(ctx.canvas.height/10*5);
+    this.positionY=(ctx.canvas.height/10*6);
     this.hit=true;
 
 }
@@ -95,19 +106,67 @@ Net.prototype.draw=function(){
 
 
 ///VOLLEYBALLER
-const Volleyballer = function(ctx,positionX,color,play){
-    this.height= ctx.canvas.height/16;
-    this.width=ctx.canvas.width/15;
+const Volleyballer = function(ctx,positionX,color,canPlay){
+    this.height= ctx.canvas.height/10;
+    this.width=ctx.canvas.width/22;
     this.positionX=positionX;
-    this.positionY= ctx.canvas.height;
+    this.positionY= (ctx.canvas.height/10*9.7);
     this.color=color;
     this.pkt=0;
-    this.play=play;
+    this.canPlay=canPlay;
 }
 
-Volleyballer.prototype.move=function(e){  
-        
-        this.positionX=e-ctx.canvas.offsetLeft-(this.width/2);            
+Volleyballer.prototype.move=function(e,ball){  
+    if( this.canPlay)
+    {
+        this.positionX=e-ctx.canvas.offsetLeft-(this.width/2);         
+    }
+    else
+    {
+        if(ball.positionX>ctx.canvas.width/2){
+            if(this.positionX>ball.positionX)
+            {
+                if((this.positionY-ball.positionY)>ctx.canvas.height/3){
+                    this.positionX-=ctx.canvas.width/230;
+                }else
+                {
+                    if((this.positionY-ball.positionY)>ctx.canvas.height/9)
+                    {
+                        this.positionX-=ctx.canvas.width/120;
+                    }else{
+                        this.positionX-=ctx.canvas.width/180;
+                    }
+                    
+                }
+                
+            }
+            else if(this.positionX<ball.positionX)
+            {
+                if((this.positionY-ball.positionY)>ctx.canvas.height/3){
+                    this.positionX+=ctx.canvas.width/230;
+                }else
+                {
+                    if((this.positionY-ball.positionY)>ctx.canvas.height/9)
+                    {
+                        this.positionX+=ctx.canvas.width/120;
+                    }else{
+                        this.positionX+=ctx.canvas.width/180;
+                    }
+                }
+                
+            }            
+        }   
+        else{
+            if(ball.positionX>ctx.canvas.width/4)
+            {
+                this.positionX-=ctx.canvas.width/500;
+            }
+            else{
+                this.positionX+=ctx.canvas.width/500;
+            }
+        }        
+    }
+       
     
 }
 
@@ -155,9 +214,9 @@ VolleyballGame.prototype.drawElements=function(){
     this.computer.draw();
 }
 VolleyballGame.prototype.moveElements=function(position,ctx){
-    this.player.move(position);
+    this.player.move(position,this.ball);
     this.ball.move(ctx);
-    this.computer.move(position);
+    this.computer.move(position,this.ball);
     
 }
 
@@ -240,7 +299,7 @@ VolleyballGame.prototype.gameOver=function(){
 }
 
 
-const ball1 = new Ball(ctx,20,"yellow");  
+const ball1 = new Ball(ctx,20,"purple");  
 const net = new Net(ctx);  
 const player = new Volleyballer(ctx,200,"red",true);
 const computer = new Volleyballer(ctx,700,"green",false);
@@ -269,7 +328,7 @@ const play = function(){
       const startGame = function()
       {
         game.detectedHits();
-        ctx.fillStyle="beige";
+        ctx.fillStyle=gradient;
         ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
         game.drawElements();    
        game.moveElements(position,ctx);
